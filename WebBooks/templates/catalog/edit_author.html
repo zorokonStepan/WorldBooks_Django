@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+    <h3>Список авторов в БД</h3>
+    <h4>{{ author.first_name }} {{ author.last_name }}</h4>
+    <form method="POST">
+        {% csrf_token %}
+        <>
+            <lаbеl>Иэмените имя</lаbеl><br>
+            <input type="text" name="first_name" value="{{ author.first_name }}"/>
+        </p>
+        <p>
+            <lаbеl>Иэмените фамилию</lаbеl><br>
+            <input type="text" name="last_name" value="{{ author.last_name }}"/>
+        </p>
+        <p>
+            <lаbеl>Иэмените дату рождения</lаbеl><br>
+            <input type="date" name="date_of_birth" value="{{ author.date_of_birth }}"/>
+        </p>
+        <р>
+            <lаbеl>Иэмените дату смерти</lаbеl><br>
+            <input type="date" name="date_of_death" value="{{ author.date_of_death }}"/>
+        </р>
+        <input type="submit" value="Сохранить">
+    </form>
+{% endblock %}

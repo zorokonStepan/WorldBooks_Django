@@ -1,9 +1,12 @@
-from django.shortcuts import render
 from django.views import generic
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.shortcuts import render
+from django.urls import reverse_lazy
 
+from .forms import AuthorsForm
 from .models import Book, Author, BookInstance, Genre
-
 
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """Универсальный класс представления списка книг, находящихся в заказе у текущего пользователя."""
@@ -22,6 +25,31 @@ class BookListView(generic.ListView):
 
 class BookDetailView(generic.DetailView):
     model = Book
+
+
+class BookCreate(CreateView):
+    """перенаправляют пользователя на страницу, указанную в параметре success_url.
+    Эта страница, на которую будет перенаправлен пользователь в случае успешного завершения операции,
+    покажет ему созданные или отредактированные данные. Кстати, при помощи параметра
+    success_url можно задать и альтернативное перенаправление
+
+    Здесь с параметром success_url мы используем функцию reverse_lazy() -
+    для перехода на страницу списка книг.
+    Функция reverse_lazy() - это более «ленивая» версия функции reverse()."""
+    model = Book
+    fields = '__all__'
+    success_url = reverse_lazy('books')
+
+
+class BookUpdate(UpdateView):
+    model = Book
+    fields = '__all__'
+    success_url = reverse_lazy('books')
+
+
+class BookDelete(DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
 
 
 class AuthorListView(generic.ListView):
@@ -52,3 +80,49 @@ def index(request):
                            'num_visits': num_visits,
                            }
                   )
+
+
+def authors_add(request):
+    """получение данных из БД и загрузка шаблона authors add.html """
+    authors = Author.objects.all()
+    authors_form = AuthorsForm()
+    return render(request,
+                  "catalog/authors_add.html",
+                  {"form": authors_form, "authors": authors}
+                  )
+
+
+def create_author(request):
+    """сохранение данных об авторах в БД """
+    if request.method == "POST":
+        author = Author()
+        author.first_name = request.POST.get("first_name")
+        author.last_name = request.POST.get("last_name")
+        author.date_of_birth = request.POST.get("date_of_birth")
+        author.date_of_death = request.POST.get("date_of_death")
+        author.save()
+        return HttpResponseRedirect('/catalog/authors_add/')
+
+
+def edit_author(request, id):
+    """изменение данных в БД """
+    author = Author.objects.get(id=id)
+    if request.method == "POST":
+        author.first_name = request.POST.get("first_name")
+        author.last_name = request.POST.get("last_name")
+        author.date_of_birth = request.POST.get("date_of_birth")
+        author.date_of_death = request.POST.get("date_of_death")
+        author.save()
+        return HttpResponseRedirect("/catalog/authors_add/")
+    else:
+        return render(request, "catalog/edit_author.html", {"author": author})
+
+
+def delete_author(request, id):
+    """удаление авторов иэ БД """
+    try:
+        author = Author.objects.get(id=id)
+        author.delete()
+        return HttpResponseRedirect("/catalog/authors_add/")
+    except Author.DoesNotExist:
+        return HttpResponseNotFound("<h2>Aвтop не найден</h2>")
