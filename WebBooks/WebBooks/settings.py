@@ -139,7 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 # Абсолютный путь к каталогу, в котором collectstatic будет собирать статические файлы для развертывания.
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = 'static/'
 
@@ -149,7 +149,7 @@ STATICFILES_DIRS = [
 
 # Упрощенная обработка статических файлов.
 # https://warehouse.python.org/project/whitenoise/
-# STATICFILES_STORAGE = 'whitenoise.storage.CompresseclМanifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompresseclМanifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

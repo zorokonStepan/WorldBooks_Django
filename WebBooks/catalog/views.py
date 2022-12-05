@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from .forms import AuthorsForm
 from .models import Book, Author, BookInstance, Genre
 
+
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     """Универсальный класс представления списка книг, находящихся в заказе у текущего пользователя."""
     model = BookInstance
